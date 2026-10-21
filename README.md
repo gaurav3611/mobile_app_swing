@@ -1,14 +1,19 @@
 # SwingLab recorder, the Flutter app
 
-An Android app that connects to the SwingLab bat sensor over Bluetooth, records each shot between Start and Stop, and saves every reading as a CSV file in a folder per shot type.
+An Android app that connects to the SwingLab bat sensor over Bluetooth, records each shot between Start and Stop or by itself with auto record, shows the same shot metrics as the web dashboard, and saves every reading as a CSV file in a folder per shot type.
 
 The sensor, its circuit and its firmware are in [Cric-Pro-Hardware](https://github.com/gaurav3611/Cric-Pro-Hardware). The web dashboard is [Cric-Pro-FE](https://github.com/gaurav3611/Cric-Pro-FE).
+
+**Version 0.2.0.** Download the APK from [Releases](https://github.com/gaurav3611/mobile_app_swing/releases/latest). What changed in each version is in [CHANGELOG.md](CHANGELOG.md).
 
 ## What it does
 
 - **Finds and connects** to the bat. Only devices that advertise the SwingLab service are listed. It works with the bat running stage 5 or stage 8 of [Cric-Pro-Hardware](https://github.com/gaurav3611/Cric-Pro-Hardware).
 - **Shows live readings**: acceleration and rotation on all three axes, bat speed, total acceleration, and readings per second.
+- **Shows the bat's battery every time it is connected**, in the Sensor card and in the top bar, red at 10% or below. It needs the bat firmware built with `HAS_BATTERY_SENSE 1` and the battery parts R1, R2 and C1. Otherwise the line says why there is no percent.
 - **Records between Start and Stop.** Every reading is kept, with the time the phone received it and the time since Start.
+- **Or records by itself, with Auto record** (in Settings). A shot starts when the bat goes faster than 10 km/h, keeps the second before it for the backlift, and ends after half a second under 5 km/h or after 3 seconds. Swings that never reach 12 km/h, or move for less than 0.3 seconds, are not kept. Start and Stop still work while it is on. Auto shots are saved the same way, with `auto` in the status column of `index.csv`.
+- **Shows the web dashboard's metrics for every shot**: bat speed, impact, control and follow-through with their badges, accuracy and grade, direction and score. A Session card adds averages, the best speed, the overall score and the dashboard's remarks. `lib/analysis.dart` is a line-by-line copy of the dashboard's arithmetic, and `test/analysis_test.dart` checks both give the same numbers.
 - **Saves each shot as a CSV file**, named by its type and numbered:
 
   ```
