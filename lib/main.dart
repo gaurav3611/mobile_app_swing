@@ -15,6 +15,7 @@ import 'package:share_plus/share_plus.dart';
 
 import 'analysis.dart';
 import 'protocol.dart';
+import 'recordings.dart';
 
 void main() => runApp(const RecorderApp());
 
@@ -119,6 +120,8 @@ class _RecorderPageState extends State<RecorderPage> {
   String _shotType = 'auto';
   String? _result;
   List<File> _files = [];
+  bool _choosing = false; // picking shots to delete
+  final Set<String> _chosen = {}; // their paths
   Directory? _folder;
 
   // ---- auto record, and the web app's metrics for every shot of this session
@@ -432,6 +435,53 @@ class _RecorderPageState extends State<RecorderPage> {
     }
   }
 
+  /// CLEAR: a warning first, then every shot or the ones chosen.
+  Future<void> _clear() async {
+    final n = _files.length;
+    final shots = '$n shot${n == 1 ? '' : 's'}';
+    final choice = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete shots?'),
+        content: Text('Deleted shots cannot be recovered. Delete all $shots, or choose the ones to delete. '
+            'Their CSV files are removed from the phone.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context, 'choose'), child: const Text('Choose shots')),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Ground.red),
+            onPressed: () => Navigator.pop(context, 'all'),
+            child: Text('Delete all $shots'),
+          ),
+        ],
+      ),
+    );
+    if (choice == 'choose') {
+      setState(() {
+        _choosing = true;
+        _chosen.clear();
+      });
+    } else if (choice == 'all') {
+      await deleteRecordings(await _recordingsFolder(), _files, all: true);
+      await _loadFiles();
+      _tell('Shot history cleared');
+    }
+  }
+
+  Future<void> _deleteChosen() async {
+    final n = await deleteRecordings(await _recordingsFolder(), _files.where((f) => _chosen.contains(f.path)));
+    setState(() {
+      _choosing = false;
+      _chosen.clear();
+    });
+    await _loadFiles();
+    _tell('$n shot${n == 1 ? '' : 's'} deleted');
+  }
+
+  void _tell(String message) {
+    if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
   // ------------------------------------------------------------------ screen
 
   @override
@@ -544,22 +594,36 @@ class _RecorderPageState extends State<RecorderPage> {
           _section('Recordings', [
             Text(_folder == null ? '' : 'Saved in ${_folder!.path}', style: _muted(context)),
             if (_files.isEmpty) const Text('Nothing recorded yet.'),
-            if (_files.isNotEmpty)
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton(
+            if (_files.isNotEmpty && !_choosing)
+              Wrap(spacing: 8, children: [
+                TextButton(
                     onPressed: () => _share([..._files, if (File('${_folder!.path}/index.csv').existsSync()) File('${_folder!.path}/index.csv')]),
                     child: const Text('Share all files')),
-              ),
+                TextButton(
+                    style: TextButton.styleFrom(foregroundColor: Ground.red),
+                    onPressed: rec == null ? _clear : null,
+                    child: const Text('Clear')),
+              ]),
+            if (_choosing) _chooseBar(),
             for (final f in _files)
               ListTile(
                 contentPadding: EdgeInsets.zero,
+                leading: _choosing
+                    ? Checkbox(
+                        value: _chosen.contains(f.path),
+                        activeColor: Ground.red,
+                        onChanged: (_) => _toggleChosen(f),
+                      )
+                    : null,
+                onTap: _choosing ? () => _toggleChosen(f) : null,
                 title: Text(f.uri.pathSegments.last, style: const TextStyle(fontFamily: 'monospace')),
                 subtitle: Text('${f.parent.uri.pathSegments.where((s) => s.isNotEmpty).last}, ${f.lastModifiedSync().toLocal().toString().substring(0, 19)}'),
-                trailing: Wrap(children: [
-                  IconButton(tooltip: 'Share', icon: const Icon(Icons.share), onPressed: () => _share([f])),
-                  IconButton(tooltip: 'Delete', icon: const Icon(Icons.delete_outline), onPressed: () => _delete(f)),
-                ]),
+                trailing: _choosing
+                    ? null
+                    : Wrap(children: [
+                        IconButton(tooltip: 'Share', icon: const Icon(Icons.share), onPressed: () => _share([f])),
+                        IconButton(tooltip: 'Delete', icon: const Icon(Icons.delete_outline), onPressed: () => _delete(f)),
+                      ]),
               ),
           ]),
         ],
@@ -568,6 +632,29 @@ class _RecorderPageState extends State<RecorderPage> {
   }
 
   TextStyle? _muted(BuildContext context) => Theme.of(context).textTheme.bodySmall;
+
+  void _toggleChosen(File f) => setState(() => _chosen.contains(f.path) ? _chosen.remove(f.path) : _chosen.add(f.path));
+
+  /// Shown while shots are chosen for deletion.
+  Widget _chooseBar() => Container(
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(color: const Color(0xFFFBE9E7), borderRadius: BorderRadius.circular(6)),
+        child: Row(children: [
+          Expanded(child: Text('${_chosen.length} selected', style: const TextStyle(fontWeight: FontWeight.w600))),
+          TextButton(
+              onPressed: () => setState(() {
+                    _choosing = false;
+                    _chosen.clear();
+                  }),
+              child: const Text('Cancel')),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Ground.red),
+            onPressed: _chosen.isEmpty ? null : _deleteChosen,
+            child: const Text('Delete selected'),
+          ),
+        ]),
+      );
 
   IconData _batteryIcon(int percent) => percent > 80
       ? Icons.battery_full
