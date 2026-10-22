@@ -26,6 +26,7 @@ The sensor, its circuit and its firmware are in [Cric-Pro-Hardware](https://gith
 
 - **Keeps what was recorded if the sensor disconnects** in the middle, marked as interrupted in `index.csv`.
 - **Shares files** to Drive, email or WhatsApp, one at a time or all at once, and deletes them.
+- **Clears the history** with a warning first: **Clear** offers to delete every shot, together with `index.csv`, or to choose the ones to delete. Deleted shots cannot be recovered.
 - **Has a simulated bat**, for trying it without a sensor. Its files start with `sim_`.
 
 ## How the shot type is found
