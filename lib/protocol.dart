@@ -2,7 +2,7 @@
 // tested on a computer (test/protocol_test.dart). The screen is in main.dart.
 //
 // The packet is the kit's: 14 bytes, seven signed 16-bit numbers, low byte first:
-// ax, ay, az, gx, gy, gz, temperature. See stages/08_swinglab_bat/swing_packet.h in
+// ax, ay, az, gx, gy, gz, temperature. See stages/08_sswingg_bat/swing_packet.h in
 // https://github.com/gaurav3611/Cric-Pro-Hardware.
 
 import 'dart:math' as math;

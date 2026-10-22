@@ -1,4 +1,4 @@
-// SwingLab recorder: connects to the bat sensor over Bluetooth, records each shot between
+// SSwinGG recorder: connects to the bat sensor over Bluetooth, records each shot between
 // Start and Stop, or by itself with auto record, and saves every reading as a CSV file, one
 // folder per shot type. The packet, the shot guess, the CSV and the file names are in
 // protocol.dart. The web app's shot metrics and the swing detector are in analysis.dart.
@@ -43,7 +43,7 @@ class RecorderApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final shape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(6));
     return MaterialApp(
-      title: 'SwingLab recorder',
+      title: 'SSwinGG recorder',
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: const ColorScheme.light(
@@ -225,7 +225,7 @@ class _RecorderPageState extends State<RecorderPage> {
     FlutterBluePlus.cancelWhenScanComplete(sub);
     try {
       if (Platform.isAndroid && FlutterBluePlus.adapterStateNow == BluetoothAdapterState.off) await FlutterBluePlus.turnOn();
-      // The sensor advertises the service id, so only SwingLab sensors are listed.
+      // The sensor advertises the service id, so only SSwinGG sensors are listed.
       await FlutterBluePlus.startScan(withServices: [Guid(serviceUuid)], timeout: const Duration(seconds: 10));
       await FlutterBluePlus.isScanning.where((scanning) => !scanning).first;
       _status = _found.isEmpty ? 'No sensor found. Is it switched on and blinking slowly?' : 'Tap the sensor to connect';
@@ -397,7 +397,7 @@ class _RecorderPageState extends State<RecorderPage> {
     if (mounted) setState(() {});
   }
 
-  /// Android: /storage/emulated/0/Android/data/com.swinglab.swinglab_recorder/files/recordings
+  /// Android: /storage/emulated/0/Android/data/com.sswingg.sswingg_recorder/files/recordings
   Future<Directory> _recordingsFolder() async {
     final base = await getExternalStorageDirectory() ?? await getApplicationDocumentsDirectory();
     return _folder = Directory('${base.path}/recordings');
@@ -442,7 +442,7 @@ class _RecorderPageState extends State<RecorderPage> {
     String d(double? v) => v == null ? '-' : v.toStringAsFixed(0);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('SwingLab recorder'),
+        title: const Text('SSwinGG recorder'),
         actions: [
           if (_device != null && _batteryPercent != null)
             Padding(

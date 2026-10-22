@@ -1,6 +1,6 @@
-# SwingLab recorder, the Flutter app
+# SSwinGG recorder, the Flutter app
 
-An Android app that connects to the SwingLab bat sensor over Bluetooth, records each shot between Start and Stop or by itself with auto record, shows the same shot metrics as the web dashboard, and saves every reading as a CSV file in a folder per shot type.
+An Android app that connects to the SSwinGG bat sensor over Bluetooth, records each shot between Start and Stop or by itself with auto record, shows the same shot metrics as the web dashboard, and saves every reading as a CSV file in a folder per shot type.
 
 The sensor, its circuit and its firmware are in [Cric-Pro-Hardware](https://github.com/gaurav3611/Cric-Pro-Hardware). The web dashboard is [Cric-Pro-FE](https://github.com/gaurav3611/Cric-Pro-FE).
 
@@ -8,7 +8,7 @@ The sensor, its circuit and its firmware are in [Cric-Pro-Hardware](https://gith
 
 ## What it does
 
-- **Finds and connects** to the bat. Only devices that advertise the SwingLab service are listed. It works with the bat running stage 5 or stage 8 of [Cric-Pro-Hardware](https://github.com/gaurav3611/Cric-Pro-Hardware).
+- **Finds and connects** to the bat. Only devices that advertise the SSwinGG service are listed. It works with the bat running stage 5 or stage 8 of [Cric-Pro-Hardware](https://github.com/gaurav3611/Cric-Pro-Hardware).
 - **Shows live readings**: acceleration and rotation on all three axes, bat speed, total acceleration, and readings per second.
 - **Shows the bat's battery every time it is connected**, in the Sensor card and in the top bar, red at 10% or below. It needs the bat firmware built with `HAS_BATTERY_SENSE 1` and the battery parts R1, R2 and C1. Otherwise the line says why there is no percent.
 - **Records between Start and Stop.** Every reading is kept, with the time the phone received it and the time since Start.
@@ -77,7 +77,7 @@ On first use the phone asks to allow "Nearby devices". Allow it, or the app cann
 
 ## Where the files are
 
-On the phone: `Android/data/com.swinglab.swinglab_recorder/files/recordings/`. Newer Android versions hide that folder from the Files app, so use **Share** or **Share all files** in the app, or connect the phone to a computer by USB and open the same folder there.
+On the phone: `Android/data/com.sswingg.sswingg_recorder/files/recordings/`. Newer Android versions hide that folder from the Files app, so use **Share** or **Share all files** in the app, or connect the phone to a computer by USB and open the same folder there.
 
 ## Things to know
 

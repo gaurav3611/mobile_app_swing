@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:swinglab_recorder/protocol.dart';
+import 'package:sswingg_recorder/protocol.dart';
 
 List<int> hex(String h) => [for (var i = 0; i < h.length; i += 2) int.parse(h.substring(i, i + 2), radix: 16)];
 

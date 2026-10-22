@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:swinglab_recorder/analysis.dart';
-import 'package:swinglab_recorder/protocol.dart';
+import 'package:sswingg_recorder/analysis.dart';
+import 'package:sswingg_recorder/protocol.dart';
 
 // The same readings were run through the web app's swing-analysis.ts. The expected numbers below
 // are what it computed, so this test fails if the two apps ever disagree.
